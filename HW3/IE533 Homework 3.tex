@@ -1,0 +1,853 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{IE533 Homework 3}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \textbf{NAME: Duo Zhou}
+
+\textbf{NETID: duozhou2}
+
+    \hypertarget{section}{%
+\section{1}\label{section}}
+
+The bubble sort algorithm is a popular method for sorting \(n\) numbers
+in a non-decreasing order of their magnitudes. The algorithm maintains
+an ordered set of the numbers \(\{a_1, a_2, ... , a_n\}\) that it
+rearranges through a sequence of several passes over the set. In each
+pass, the algorithm examines every pair of elements \((a_k, a_{k+I})\)
+for each \(k = 1,...,(n-1)\), and if the pair is out of order (i.e.,
+\(a_k > a_{k+1}\)), it swaps the positions of these elements. The
+algorithm terminates when it makes no swap during one entire pass.
+
+Show that the algorithm performs at most \(n\) passes and runs in
+\(O(n^2)\) time. For every \(n\), construct a sorting problem (i.e., the
+initial ordered set of numbers \(\{a_1, a_2...,a_n\}\) so that the
+algorithm performs \(\Omega(n^2)\) operations. Conclude that the bubble
+sort is an \(O(n^2)\) algorithm.
+
+\hypertarget{solution}{%
+\subsection{Solution}\label{solution}}
+
+Illustrate by python code as below:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{bubbleSort}\PY{p}{(}\PY{n}{\PYZus{}list}\PY{p}{)}\PY{p}{:}
+    \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{\PYZus{}list}\PY{p}{)}
+    \PY{c+c1}{\PYZsh{} Go through all elements}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} Last i elements are already in place}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{n}\PY{o}{\PYZhy{}}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{\PYZus{}list}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{\PYZgt{}} \PY{n}{\PYZus{}list}\PY{p}{[}\PY{n}{j}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]} \PY{p}{:}
+                \PY{n}{\PYZus{}list}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{,} \PY{n}{\PYZus{}list}\PY{p}{[}\PY{n}{j}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{\PYZus{}list}\PY{p}{[}\PY{n}{j}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{\PYZus{}list}\PY{p}{[}\PY{n}{j}\PY{p}{]}
+    \PY{k}{return} \PY{n}{\PYZus{}list}
+
+\PY{n}{test} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{11}\PY{p}{,} \PY{l+m+mi}{27}\PY{p}{,} \PY{l+m+mi}{76}\PY{p}{,} \PY{l+m+mi}{24}\PY{p}{,} \PY{l+m+mi}{46}\PY{p}{,} \PY{l+m+mi}{72}\PY{p}{,} \PY{l+m+mi}{78}\PY{p}{,} \PY{l+m+mi}{25}\PY{p}{,} \PY{l+m+mi}{36}\PY{p}{]}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{bubbleSort}\PY{p}{(}\PY{n}{test}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[11, 24, 25, 27, 36, 46, 72, 76, 78]
+    \end{Verbatim}
+
+    Optimal time complexity: \(O(n)\). Tt means that the sorting is
+completed after traversing once and finding no elements that can be
+swapped, we only need to implement the loop of i.
+
+Worst time complexity: \(O(n^2)\). It means in the worst-case scenario,
+the algorithm has to perform n-1 passes, since each pass requires
+\(n-1\) comparisons and swaps, the total number of comparisons in the
+worst-case scenario is \((n-1) + (n-2) + ... + 2 + 1 = n(n-1)/2\), which
+is roughly proportional to \(n^2\).
+
+    \hypertarget{section}{%
+\section{2}\label{section}}
+
+Suggest an \(O(m+n)\) algorithm for identifying all components of a
+(possibly) disconnected graph. Design the algorithm so that it will
+assign a label \(1\) to all nodes in the first component, a label \(2\)
+to all nodes in the second component, and so on.
+
+\hypertarget{solution}{%
+\subsection{Solution}\label{solution}}
+
+One algorithm to identify all components of a graph and label each
+component is a Depth-First Search (DFS) or Breadth-First Search (BFS)
+based approach, which would result in the same time and space
+complexity.
+
+The time complexity of this algorithm is \(O(m + n)\), where m is the
+number of edges in the graph and n is the number of nodes. This is
+because in the worst case, the algorithm will visit each node and each
+edge once. The DFS stack requires \(O(n)\) space, so the overall space
+complexity is also \(O(n)\).
+
+Illustrate by python code as below:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{DFS}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{,} \PY{n}{start}\PY{p}{)}\PY{p}{:}
+    \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+    \PY{c+c1}{\PYZsh{} start a vertex on the stack first, mark it as visited}
+    \PY{n}{stack} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{result} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{visited} \PY{o}{=} \PY{p}{[}\PY{k+kc}{False}\PY{p}{]} \PY{o}{*} \PY{n}{n}
+    
+    \PY{n}{stack}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{start}\PY{p}{)}
+    \PY{n}{visited}\PY{p}{[}\PY{n}{start}\PY{p}{]} \PY{o}{=} \PY{k+kc}{True}
+    
+    \PY{k}{while} \PY{n}{stack}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} pop a vertex at the top of the stack, add the neighboring unvisited vertices of that vertex to the stack and mark them all as visited}
+        \PY{n}{node} \PY{o}{=} \PY{n}{stack}\PY{o}{.}\PY{n}{pop}\PY{p}{(}\PY{p}{)}
+        \PY{n}{result}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{node}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} Repeat the previous step until the stack is empty}
+        \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{adj\PYZus{}matrix}\PY{p}{[}\PY{n}{node}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o+ow}{and} \PY{o+ow}{not} \PY{n}{visited}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{:}
+                \PY{n}{stack}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{i}\PY{p}{)}
+                \PY{n}{visited}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{k+kc}{True}
+    
+    \PY{k}{return} \PY{n}{result}
+
+\PY{k}{def} \PY{n+nf}{BFS}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{,} \PY{n}{start}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{} the starting vertex start goes into the queue first and is marked as visited}
+    \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+    \PY{n}{queue} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{result} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{visited} \PY{o}{=} \PY{p}{[}\PY{k+kc}{False}\PY{p}{]} \PY{o}{*} \PY{n}{n}
+    
+    \PY{n}{queue}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{start}\PY{p}{)}
+    \PY{n}{visited}\PY{p}{[}\PY{n}{start}\PY{p}{]} \PY{o}{=} \PY{k+kc}{True}
+    
+    \PY{k}{while} \PY{n}{queue}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} the first vertex out of the queue, and the adjacent unvisited vertices neighbors of that vertex into the queue, marking them all as visited}
+        \PY{n}{node} \PY{o}{=} \PY{n}{queue}\PY{o}{.}\PY{n}{pop}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+        \PY{n}{result}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{node}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} repeat the previous step until the queue is empty}
+        \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{adj\PYZus{}matrix}\PY{p}{[}\PY{n}{node}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o+ow}{and} \PY{o+ow}{not} \PY{n}{visited}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{:}
+                \PY{n}{queue}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{i}\PY{p}{)}
+                \PY{n}{visited}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{k+kc}{True}
+    
+    \PY{k}{return} \PY{n}{result}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{adj\PYZus{}matrix} \PY{o}{=} \PY{p}{[}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+              \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+              \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+              \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+              \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+              \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}
+\PY{n}{s} \PY{o}{=} \PY{l+m+mi}{0}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{DFS}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{,}\PY{n}{s}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{BFS}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{,}\PY{n}{s}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[0, 1, 3, 5, 2, 4]
+[0, 1, 2, 3, 4, 5]
+    \end{Verbatim}
+
+    \hypertarget{section}{%
+\section{3}\label{section}}
+
+In an acyclic network \(G = (N, A)\) with a specified source node \(s\),
+let \(\alpha(i)\) denote the number of distinct paths from node \(s\) to
+node \(i\). Give an \(O(m)\) algorithm that determines \(\alpha(i)\) for
+all \(i \in N\). (Hint: Examine nodes in a topological order).
+
+\hypertarget{solution}{%
+\subsection{Solution}\label{solution}}
+
+In an acyclic network, nodes can be ordered such that for every directed
+edge \((u, v)\), node \(u\) appears before node \(v\) in the order. This
+order is called a topological order, and it can be found using a
+topological sorting algorithm. Once the topological order is found, we
+can use it to determine the number of distinct paths from the source
+node \(s\) to each node \(i\) in the network.
+
+The time complexity of this algorithm is \(O(m)\), where \(m\) is the
+number of edges in the network. This is because each edge is processed
+exactly once and takes constant time to update the array \(\alpha\). The
+space complexity is \(O(n)\), where \(n\) is the number of nodes in the
+network, to store the array \(\alpha\) and the topological order of the
+nodes.
+
+Illustrate by python code as below:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{sort\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}\PY{p}{:}
+    \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+    \PY{n}{sorted\PYZus{}vertices} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{visited} \PY{o}{=} \PY{p}{[}\PY{k+kc}{False}\PY{p}{]} \PY{o}{*} \PY{n}{n}
+    
+    \PY{k}{def} \PY{n+nf}{DFS}\PY{p}{(}\PY{n}{node}\PY{p}{)}\PY{p}{:}
+        \PY{k}{nonlocal} \PY{n}{sorted\PYZus{}vertices}
+        \PY{n}{visited}\PY{p}{[}\PY{n}{node}\PY{p}{]} \PY{o}{=} \PY{k+kc}{True}
+        \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{adj\PYZus{}matrix}\PY{p}{[}\PY{n}{node}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o+ow}{and} \PY{o+ow}{not} \PY{n}{visited}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{:}
+                \PY{n}{DFS}\PY{p}{(}\PY{n}{i}\PY{p}{)}
+        \PY{n}{sorted\PYZus{}vertices}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{node}\PY{p}{)}
+    
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{o+ow}{not} \PY{n}{visited}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{:}
+            \PY{n}{DFS}\PY{p}{(}\PY{n}{i}\PY{p}{)}
+    
+    \PY{n}{sorted\PYZus{}vertices}\PY{o}{.}\PY{n}{reverse}\PY{p}{(}\PY{p}{)}
+    \PY{n}{new\PYZus{}matrix} \PY{o}{=} \PY{p}{[}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{*} \PY{n}{n} \PY{k}{for} \PY{n}{\PYZus{}} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{]}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{adj\PYZus{}matrix}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{:}
+                \PY{n}{new\PYZus{}matrix}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{1}
+    
+    \PY{k}{return} \PY{n}{new\PYZus{}matrix}\PY{p}{,} \PY{n}{sorted\PYZus{}vertices}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{count\PYZus{}paths}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{,} \PY{n}{s}\PY{p}{)}\PY{p}{:}
+    \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+    \PY{c+c1}{\PYZsh{} get the topological order of the vertices using sort\PYZus{}dag}
+    \PY{n}{\PYZus{}}\PY{p}{,} \PY{n}{sorted\PYZus{}vertices} \PY{o}{=} \PY{n}{sort\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+    \PY{c+c1}{\PYZsh{} initialize an array to store the count of different paths from s to each vertex}
+    \PY{n}{count} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{*} \PY{n}{n}
+    \PY{n}{count}\PY{p}{[}\PY{n}{s}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{1}
+
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{sorted\PYZus{}vertices}\PY{p}{:}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{adj\PYZus{}matrix}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{:}
+                \PY{n}{count}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{+}\PY{o}{=} \PY{n}{count}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+    
+    \PY{k}{return} \PY{n}{count}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{alpha} \PY{o}{=} \PY{n}{count\PYZus{}paths}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{,} \PY{n}{s}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{alpha}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+[1, 1, 1, 1, 1, 2]
+    \end{Verbatim}
+
+    \hypertarget{section}{%
+\section{4}\label{section}}
+
+This part of the homework will also implement some of the algorithms
+learnt in class. You may use Python, Java, or C++ to execute this.
+Custom packages cannot be used to replace the algorithms tested.
+
+\hypertarget{a.}{%
+\subsection{a.}\label{a.}}
+
+Write a function is\_dag(G) which returns whether the input directed
+graph G is a DAG. You should implement a search algorithm to answer
+this. G should be in the form of an adjacency matrix.
+
+\hypertarget{solution}{%
+\subsubsection{Solution}\label{solution}}
+
+Based on the DFS code above, the basic idea is to keep track of visited
+nodes and nodes in the recursion stack during the search. If there is a
+back edge (an edge connecting a node to one of its ancestors in the
+search tree), then the graph is not a DAG.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{is\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}\PY{p}{:}
+    \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+    \PY{n}{visited} \PY{o}{=} \PY{p}{[}\PY{k+kc}{False}\PY{p}{]} \PY{o}{*} \PY{n}{n}
+    \PY{n}{rec\PYZus{}stack} \PY{o}{=} \PY{p}{[}\PY{k+kc}{False}\PY{p}{]} \PY{o}{*} \PY{n}{n}
+
+    \PY{k}{def} \PY{n+nf}{is\PYZus{}dag\PYZus{}util}\PY{p}{(}\PY{n}{v}\PY{p}{,} \PY{n}{visited}\PY{p}{,} \PY{n}{rec\PYZus{}stack}\PY{p}{)}\PY{p}{:}
+        \PY{n}{visited}\PY{p}{[}\PY{n}{v}\PY{p}{]} \PY{o}{=} \PY{k+kc}{True}
+        \PY{n}{rec\PYZus{}stack}\PY{p}{[}\PY{n}{v}\PY{p}{]} \PY{o}{=} \PY{k+kc}{True}
+        \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{adj\PYZus{}matrix}\PY{p}{[}\PY{n}{v}\PY{p}{]}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{==} \PY{l+m+mi}{1}\PY{p}{:}
+                \PY{k}{if} \PY{o+ow}{not} \PY{n}{visited}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{:}
+                    \PY{k}{if} \PY{n}{is\PYZus{}dag\PYZus{}util}\PY{p}{(}\PY{n}{i}\PY{p}{,} \PY{n}{visited}\PY{p}{,} \PY{n}{rec\PYZus{}stack}\PY{p}{)}\PY{p}{:}
+                        \PY{k}{return} \PY{k+kc}{True}
+                \PY{k}{elif} \PY{n}{rec\PYZus{}stack}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{:}
+                    \PY{k}{return} \PY{k+kc}{True}
+        \PY{n}{rec\PYZus{}stack}\PY{p}{[}\PY{n}{v}\PY{p}{]} \PY{o}{=} \PY{k+kc}{False}
+        \PY{k}{return} \PY{k+kc}{False}
+
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{o+ow}{not} \PY{n}{visited}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{:}
+            \PY{k}{if} \PY{n}{is\PYZus{}dag\PYZus{}util}\PY{p}{(}\PY{n}{i}\PY{p}{,} \PY{n}{visited}\PY{p}{,} \PY{n}{rec\PYZus{}stack}\PY{p}{)}\PY{p}{:}
+                \PY{k}{return} \PY{k+kc}{False}
+    \PY{k}{return} \PY{k+kc}{True}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{is\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+True
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{b.}{%
+\subsection{b.}\label{b.}}
+
+Write a function make\_dag(G) which takes as input a directed graph G
+and removes the least number of edges to return a new graph G' which is
+a DAG. Hint: use the function from the previous question to determine
+whether changes are necessary.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{make\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}\PY{p}{:}
+    \PY{n}{n} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+    \PY{n}{new\PYZus{}matrix} \PY{o}{=} \PY{p}{[}\PY{p}{[}\PY{n}{adj\PYZus{}matrix}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{]} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{]}
+    
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{n}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{n}{adj\PYZus{}matrix}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]}\PY{p}{:}
+                \PY{n}{new\PYZus{}matrix}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{0}
+                \PY{k}{if} \PY{o+ow}{not} \PY{n}{is\PYZus{}dag}\PY{p}{(}\PY{n}{new\PYZus{}matrix}\PY{p}{)}\PY{p}{:}
+                    \PY{n}{new\PYZus{}matrix}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{1}
+    
+    \PY{k}{return} \PY{n}{new\PYZus{}matrix}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{adj\PYZus{}matrix\PYZus{}1} \PY{o}{=} \PY{p}{[}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+                \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+                \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+                \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{]}
+
+\PY{n}{is\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix\PYZus{}1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+False
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{make\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix\PYZus{}1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+[[0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{c.}{%
+\subsection{c.~}\label{c.}}
+
+Write a function sort\_dag(G) which takes as input a DAG G and returns
+an equivalent topologically sorted graph \(G^'\).
+
+\hypertarget{solution}{%
+\subsubsection{Solution}\label{solution}}
+
+Use the function constructed in Question3:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sort\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix\PYZus{}1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+([[0, 0, 1, 0], [1, 0, 0, 1], [0, 1, 0, 0], [0, 0, 1, 0]], [0, 1, 2, 3])
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{sort\PYZus{}dag}\PY{p}{(}\PY{n}{adj\PYZus{}matrix}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+([[0, 0, 0, 0, 0, 0],
+  [1, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0],
+  [0, 0, 0, 1, 1, 0]],
+ [0, 1, 3, 2, 4, 5])
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{d.}{%
+\subsection{d.~}\label{d.}}
+
+Given G is the graph produced in 5c), without actually running the code
+(honor system) if we let H = sort\_dag(make\_dag(G)), is it true that
+H=G? Why or why not)
+
+\hypertarget{solution}{%
+\subsubsection{Solution}\label{solution}}
+
+No, \(H \neq G\) after running H = sort\_dag(make\_dag(G)).
+
+The function make\_dag() removes edges from the input graph \(G\) to
+obtain a DAG \(G'\). Therefore, \(G'\) is a subgraph of \(G\), which has
+a different structure than \(G\).
+
+The function sort\_dag() takes as input a DAG \(G'\) and returns an
+equivalent topologically sorted graph \(G''\).
+
+Therefore, \(G''\) has the same vertices as \(G'\), but with the edges
+rearranged to be in topological order.
+
+Verify with code:
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{G} \PY{o}{=} \PY{n}{adj\PYZus{}matrix\PYZus{}1}
+
+\PY{n}{H}\PY{p}{,} \PY{n}{vertex\PYZus{}sort} \PY{o}{=} \PY{n}{sort\PYZus{}dag}\PY{p}{(}\PY{n}{make\PYZus{}dag}\PY{p}{(}\PY{n}{G}\PY{p}{)}\PY{p}{)}
+
+\PY{k}{if} \PY{n}{G} \PY{o}{==} \PY{n}{H}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{k+kc}{True}\PY{p}{)}
+\PY{k}{else}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+False
+    \end{Verbatim}
+
+    
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
